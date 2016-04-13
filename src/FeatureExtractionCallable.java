@@ -9,7 +9,9 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import MatlabInterface.*;
+import MatlabFE.FeRemote;
+
+
 
 public  class FeatureExtractionCallable implements Callable <Object[]> {
 
@@ -35,13 +37,13 @@ public  class FeatureExtractionCallable implements Callable <Object[]> {
 	    	
 	    	
 	        Registry reg = null;
-	        MatlabInterfaceRemote dTypes = null;
+	        FeRemote dTypes = null;
 	        Object[] results = null;
 	        
 	        try{
 	        reg = LocateRegistry.getRegistry(port);
-	        String lookupString  = "MatlabInterface"+port;
-	        dTypes = (MatlabInterfaceRemote)reg.lookup(lookupString);
+	        String lookupString  = "Fe"+port;
+	        dTypes = (FeRemote)reg.lookup(lookupString);
 
 	        
 	    
@@ -94,10 +96,10 @@ public  class FeatureExtractionCallable implements Callable <Object[]> {
 	        }
 	        
 	        
-	        if(methodName.equals("getFileInfo")){
-	    		results  = dTypes.getAllFileNames(1, dirName);
-				
-	        }
+//	        if(methodName.equals("getFileInfo")){
+//	    		results  = dTypes.getAllFileNames(1, dirName);
+//				
+//	        }
 				
 				
 	        } catch (RemoteException e) {

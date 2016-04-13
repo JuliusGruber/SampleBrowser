@@ -4,9 +4,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/commons-io-2.4-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/javabuilder.jar"/>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/jitter.jar"/>
-	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/MatlabInterface.jar"/>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/max.jar"/>
+	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/MatlabFE.jar"/>
+	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/javabuilder.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

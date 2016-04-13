@@ -28,7 +28,7 @@ public class Threader extends MaxObject  {
 	}
 	
 	public void matlabFE(final String dirName){
-		final MaxPatcher p = this.getParentPatcher();
+		
 		
 		Thread t = new Thread(){
 			public void run(){
@@ -127,7 +127,7 @@ public class Threader extends MaxObject  {
 	
 	public void randomViewsThread(final String dirName) {
 		
-		final MaxPatcher p = this.getParentPatcher();
+	
 		
 		Thread t = new Thread(){
 			public void run(){
@@ -222,11 +222,6 @@ public class Threader extends MaxObject  {
 		results = new ArrayList<Atom[]>();
 		t.start();
 		
-		
-
-		
-		
-	
 		
 		
 	}

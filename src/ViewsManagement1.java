@@ -21,7 +21,7 @@ public class ViewsManagement1 extends MaxObject{
 	}
 	
 	
-	public void addView(Atom [] viewData){
+	public  void addView(Atom [] viewData){
 		System.out.println("addView() method was called");
 		
 //		for(int i = 0; i<viewData.length;i++){
@@ -36,7 +36,7 @@ public class ViewsManagement1 extends MaxObject{
 		//thisView.jsui.send("anything", viewData);
 		viewsArray.add(thisView);
 		
-		outlet(0,"bang");
+		//outlet(0,"bang");
 
 	}
 	
