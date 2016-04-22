@@ -5,6 +5,7 @@ public class Sample {
 	private String fileName;
 	private double xPosition;
 	private double yPosition;
+	private int polyAdress;
 	
 	
 	public Sample(String filePath, String fileName,double xPosition, double yPosition){
@@ -14,12 +15,43 @@ public class Sample {
 		this.yPosition = yPosition;
 	}
 	
+	public Sample(String filePath, String fileName,double xPosition, double yPosition, int polyAdress){
+		this.filePath = filePath;
+		this.fileName = fileName;
+		this.xPosition = xPosition;
+		this.yPosition = yPosition;
+		this.polyAdress = polyAdress;
+	}
+
+	public Sample( int polyAdress, String filePath ){
+		this.filePath = filePath;
+		this.polyAdress = polyAdress;
+	}
+	
 	public Sample(){
 		this.filePath = null;
 		this.fileName = null;
 		this.xPosition = 0;
 		this.yPosition = 0;
 	}
+	
+
+	
+	@Override
+	public int hashCode() {
+		return filePath.hashCode();
+	}
+
+
+
+	@Override
+	public boolean equals(Object aSample) {
+		Sample s = (Sample)aSample;
+		return getFilePath().equals(s.getFilePath());
+	}
+
+
+
 
 	public String toString(){
 		String sampleString = fileName+" with position: "+xPosition+" "+yPosition;
@@ -52,6 +84,14 @@ public class Sample {
 	}
 	public void setyPostion(double yPosition) {
 		this.yPosition = yPosition;
+	}
+
+	public int getPolyAdress() {
+		return polyAdress;
+	}
+
+	public void setPolyAdress(int polyAdress) {
+		this.polyAdress = polyAdress;
 	}
 	
 	

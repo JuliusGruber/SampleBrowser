@@ -6,8 +6,16 @@ import com.cycling74.max.*;
 
 public class ViewsManagement extends MaxObject{
 	
-	private ArrayList <View> viewsArray = new ArrayList<View>();
+	private ArrayList <View> viewsArray ;
+	private ArrayList <Sample>  polyNumberFilePath ;
 	
+	public ViewsManagement (){
+		viewsArray = 	new ArrayList<View>();
+		polyNumberFilePath = (new ArrayList<Sample>());
+		
+	}
+			
+			
 	public void update(){
 		
 	}
@@ -115,6 +123,14 @@ public class ViewsManagement extends MaxObject{
 	
 		
 	}
+
+
+	public ArrayList <Sample> getPolyNumberFilePath() {
+		return polyNumberFilePath;
+	}
+
+
+
 	
 	
 }

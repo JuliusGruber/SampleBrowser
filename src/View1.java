@@ -54,6 +54,7 @@ public class View1 extends MaxObject {
 		viewPanel.send("size", arg4);
 		viewPanel.send("border", new Atom []{Atom.newAtom(10)});
 		viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
+		viewPanel.send("ignoreclick", new Atom []{Atom.newAtom(1)});
 	   
 	
 	}

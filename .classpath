@@ -5,8 +5,17 @@
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/commons-io-2.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/jitter.jar"/>
-	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/max.jar"/>
+	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/max.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Program%20Files/Cycling%20&apos;74/Max%207/resources/packages/max-mxj/java-doc/api/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/MatlabFE.jar"/>
 	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/javabuilder.jar"/>
+	<classpathentry kind="lib" path="C:/eclipseWorkspace/AudioSampleBrowser/lib/jnativehook-2.0.3.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/eclipseWorkspace/JNativeHook/doc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

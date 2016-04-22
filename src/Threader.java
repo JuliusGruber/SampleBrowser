@@ -27,12 +27,113 @@ public class Threader extends MaxObject  {
 		
 	}
 	
-	public void matlabFE(final String dirName){
+	public void loadSamplesToPoly(String dirName){
+		deleteViews();
+		//get the file list handed to the callables and the load method
+		Collection <File> filePathColl = getFilePathCollection(dirName);
+		sendFilePathInfoToPoly(filePathColl);
+		System.out.println("Loading folder has finished");
+		setPolyNumberCompareList(filePathColl);
+		System.out.println("The polyAdressLookUp List was set");
+		
+		randomViewsThread(filePathColl);
+	}
+	
+	
+	private void deleteViews(){
+		MaxPatcher p = this.getParentPatcher();
+		//MaxBox myBpatcher = p.getNamedBox("myBpatcher");
+		//MaxPatcher viewPatcher  = myBpatcher.getSubPatcher();
+		MaxBox viewManager = p.getNamedBox("viewManager");
+		viewManager.send("deleteAllViews", null);
+	}
+	
+	
+	
+	private void setPolyNumberCompareList(Collection <File> filePathColl){
+		MaxPatcher p = this.getParentPatcher();
+		//MaxBox myBpatcher = p.getNamedBox("myBpatcher");
+		//MaxPatcher viewPatcher  = myBpatcher.getSubPatcher();
+		MaxBox viewManager = p.getNamedBox("viewManager");
+		
+		Atom [] polyNoFilePathArray = new Atom [filePathColl.size()*2];
+		int polyNumCounter = 1;
+		int arrayCounter = 0;
+		for(File file : filePathColl){
+			Atom polyNumAtom = Atom.newAtom(polyNumCounter);
+			String filePath = null;
+			try {
+				filePath = file.getCanonicalPath();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Atom filePathAtom =  Atom.newAtom(filePath);
+			
+			polyNoFilePathArray[arrayCounter]= polyNumAtom;
+			polyNoFilePathArray[arrayCounter+1]= filePathAtom;
+			
+			polyNumCounter++;
+			arrayCounter = arrayCounter+2;
+		}
+		
+		viewManager.send("setPolyLookUp", polyNoFilePathArray);
+	}
+	
+	private void  sendFilePathInfoToPoly(Collection <File> filePathColl) {
+	    post("sendFilePathInfoToPoly..");
+	 
+	    MaxPatcher p = this.getParentPatcher();
+		MaxBox audioPbatcher = p.getNamedBox("audioBpatcher");
+		MaxPatcher audioPatcher  = audioPbatcher.getSubPatcher();
+		MaxBox polyFilePathSend =  audioPatcher.getNamedBox("polyFilePathSend");
+		MaxBox polyLoopOnOffSend  = audioPatcher.getNamedBox("polyLoopOnOffSend");
+		MaxBox myPoly =  audioPatcher.getNamedBox("myPoly");
+		
+		myPoly.send("voices", new Atom []{Atom.newAtom(filePathColl.size())});
+		
+		
+		int loopCounter = 1;
+		for(File file : filePathColl){
+			
+			Atom[] polyNumber = new Atom [] {Atom.newAtom(loopCounter)};
+			String filePath = null;
+			try {
+				filePath = file.getCanonicalPath();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
+			filePath = filePath.replace("\\", "/");
+			post("filePath: "+filePath);
+			
+			polyFilePathSend.send("target", polyNumber);
+			polyFilePathSend.send(filePath, null);
+			
+			polyLoopOnOffSend.send("target", polyNumber);
+			polyLoopOnOffSend.send(1);
+			
+			
+		
+			
+			
+			
+			loopCounter++;
+		}
+		
+	
+	}
+	
+	public void matlabFE(final Collection <File> filePathColl){
 		
 		
 		Thread t = new Thread(){
 			public void run(){
-				System.out.println("Thread recieved: "+dirName); 
+				//System.out.println("Thread recieved: "+dirName); 
 				
 				
 
@@ -40,8 +141,7 @@ public class Threader extends MaxObject  {
 				
 				results = new ArrayList<Atom[]>();
 				
-				//get the file list handed to the callables
-				Collection <File> filePathCollection = getFilePathCollection(dirName);
+				
 			
 				
 
@@ -50,7 +150,7 @@ public class Threader extends MaxObject  {
 				List<? extends Callable<Atom[]>>  callables;
 				RandomCallable [] arrayCallables = new RandomCallable[numberOfThreads];
 				for(int i = 0; i< numberOfThreads; i++){
-					arrayCallables[i] = new RandomCallable(filePathCollection);
+					arrayCallables[i] = new RandomCallable(filePathColl);
 				}
 				
 				callables = Arrays.asList(arrayCallables);
@@ -125,13 +225,13 @@ public class Threader extends MaxObject  {
 		
 	}
 	
-	public void randomViewsThread(final String dirName) {
+	public void randomViewsThread(final Collection <File> filePathColl) {
 		
 	
 		
 		Thread t = new Thread(){
 			public void run(){
-				System.out.println("Thread recieved: "+dirName); 
+				//System.out.println("Thread recieved: "+dirName); 
 				
 				
 
@@ -140,7 +240,7 @@ public class Threader extends MaxObject  {
 				results = new ArrayList<Atom[]>();
 				
 				//get the file list handed to the callables
-				Collection <File> filePathCollection = getFilePathCollection(dirName);
+				//Collection <File> filePathCollection = getFilePathCollection(dirName);
 			
 				
 
@@ -149,7 +249,7 @@ public class Threader extends MaxObject  {
 				List<? extends Callable<Atom[]>>  callables;
 				RandomCallable [] arrayCallables = new RandomCallable[numberOfThreads];
 				for(int i = 0; i< numberOfThreads; i++){
-					arrayCallables[i] = new RandomCallable(filePathCollection);
+					arrayCallables[i] = new RandomCallable(filePathColl);
 				}
 				
 				callables = Arrays.asList(arrayCallables);
@@ -171,12 +271,12 @@ public class Threader extends MaxObject  {
 			        Future<Atom[]> future;
 					try {
 						future = service.take();
-						System.out.println("A THREAD HAS DONE ITS WORK...");
+						//System.out.println("A THREAD HAS DONE ITS WORK...");
 						synchronized(results){
 						results.add( future.get());
 						}
 						//printThreadResults(results);
-						//viewManager.send("addView", results);
+						
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -249,29 +349,16 @@ public class Threader extends MaxObject  {
 
 
 		
-	public void addServeralViews(String dirName){
-			
-			File dir = new File(dirName);
-			String[] extensions = new String[] { "aif", "aiff" , "flac", "mp3", "snd", "wav" };
-			List<File> files = (List<File>) FileUtils.listFiles(dir, extensions, true);
-//			for (File file : files) {
-//				try {
-//					
-//					System.out.println("filePath: " + file.getCanonicalPath());
-//					System.out.println("fileName: " + file.getName());
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
+	public void addServeralRandomViews(Collection <File> sampleInfoColl){
+
 			
 			for (int i = 0; i<40;i++){
-			int arrayInit = files.size()*4+1; //+1 for the method name needed for jsui
+			int arrayInit = sampleInfoColl.size()*4+1; //+1 for the method name needed for jsui
 			//add the method name as the first entry in the atom array handed to the jsui
 			Atom [] viewAtomArray =  new Atom [arrayInit];
 			viewAtomArray[0]=Atom.newAtom("setSampleData");
 			int arrayCounter = 1;
-			for (File file : files) {
+			for (File file : sampleInfoColl) {
 				String filePath = "";
 				try {
 					filePath = file.getCanonicalPath();

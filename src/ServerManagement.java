@@ -1,5 +1,6 @@
 
 
+import com.cycling74.max.MaxBox;
 import com.cycling74.max.MaxObject;
 import com.cycling74.max.MaxPatcher;
 import com.cycling74.max.MaxWindow;
@@ -16,6 +17,12 @@ import java.rmi.registry.*;
 
 public class ServerManagement extends MaxObject {
 	
+	
+
+
+	
+
+
 	public  void startServers(){
 //		
 //		MaxPatcher parentPatcher = this.getParentPatcher();
