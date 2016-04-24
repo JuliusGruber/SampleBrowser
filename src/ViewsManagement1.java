@@ -8,17 +8,26 @@ import com.cycling74.max.*;
 
 public class ViewsManagement1 extends MaxObject{
 	
-	private ArrayList <View1> viewsArray; 
+	private ArrayList <View1> viewsList; 
 	private HashMap <String,Sample>  polyAdressLookUp;
 	
 	public ViewsManagement1 (){
-		viewsArray = 	new ArrayList<View1>();
+		viewsList = 	new ArrayList<View1>();
 		polyAdressLookUp = new HashMap<String,Sample>();
 		
 	}
 	
-	public void update(){
+	public void selectSamplesInAllViews(Atom  [] filePathArray){
+		for (int i = 0; i < this.viewsList.size(); i++) {
+			viewsList.get(i).jsui.send("list", filePathArray);
+		}
 		
+	}
+	
+	public void unSelectSamplesInAllViews(Atom [] filePathArray){
+		for (int i = 0; i < this.viewsList.size(); i++) {
+			viewsList.get(i).jsui.send("list", filePathArray);
+		}
 	}
 	
 
@@ -31,7 +40,7 @@ public class ViewsManagement1 extends MaxObject{
 //			
 //		}
 	
-		int viewNumber = viewsArray.size();
+		int viewNumber = viewsList.size();
 		ArrayList<Sample> sampleList = createSamplesArrayList(viewData);
 		MaxPatcher p = this.getParentPatcher();
 		MaxBox viewsBpatcher = p.getNamedBox("viewsBpatcher");
@@ -39,7 +48,7 @@ public class ViewsManagement1 extends MaxObject{
 		
 		View1 thisView =  new View1(viewNumber, viewsPatcher, sampleList, viewData);
 		//thisView.jsui.send("anything", viewData);
-		viewsArray.add(thisView);
+		viewsList.add(thisView);
 		
 		
 
@@ -73,10 +82,10 @@ public class ViewsManagement1 extends MaxObject{
 
 	
 	public void getSelectedView(){
-		for (int i = 0; i < this.viewsArray.size(); i++) {
+		for (int i = 0; i < this.viewsList.size(); i++) {
 		
-			if(viewsArray.get(i).isSelected){
-				post("Currently selected view: "+viewsArray.get(i).viewName);
+			if(viewsList.get(i).isSelected){
+				post("Currently selected view: "+viewsList.get(i).viewName);
 			}
 			
 		}
@@ -88,17 +97,17 @@ public class ViewsManagement1 extends MaxObject{
 		System.out.println("VIEW MANAGER setSelctedView() method was called with: " +viewName);
 		
 		View1 selectedView = null;
-		for (int i = 0; i < this.viewsArray.size(); i++) {
-			String compareName = viewsArray.get(i).viewName;
+		for (int i = 0; i < this.viewsList.size(); i++) {
+			String compareName = viewsList.get(i).viewName;
 			if(viewName.equals(compareName)){
-				selectedView = viewsArray.get(i);
-				viewsArray.get(i).isSelected = true;
+				selectedView = viewsList.get(i);
+				viewsList.get(i).isSelected = true;
 				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(20)});
-				viewsArray.get(i).viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (0),Atom.newAtom(0), Atom.newAtom (1)});
+				viewsList.get(i).viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (0),Atom.newAtom(0), Atom.newAtom (1)});
 			}else{
-				viewsArray.get(i).isSelected = false;
+				viewsList.get(i).isSelected = false;
 				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(10)});
-				viewsArray.get(i).viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
+				viewsList.get(i).viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
 			}
 		}
 		//getSelectedView();
@@ -152,7 +161,7 @@ public class ViewsManagement1 extends MaxObject{
 		
 		
 		
-		viewsArray = new ArrayList<View1>();
+		viewsList = new ArrayList<View1>();
 		MaxPatcher p = this.getParentPatcher();
 		MaxBox viewBpatcher = p.getNamedBox("viewsBpatcher");
 	    MaxPatcher viewsPatcher = viewBpatcher.getSubPatcher();
@@ -170,11 +179,6 @@ public class ViewsManagement1 extends MaxObject{
 		
 		
 	}
-	
-	
-
-	
-
 	
 	//called from Threader before the FE starts
 	public void setPolyLookUp(Atom [] polyNoFilePath) {

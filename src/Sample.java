@@ -8,6 +8,7 @@ public class Sample {
 	private int polyAdress;
 	
 	
+	
 	public Sample(String filePath, String fileName,double xPosition, double yPosition){
 		this.filePath = filePath;
 		this.fileName = fileName;
@@ -26,6 +27,11 @@ public class Sample {
 	public Sample( int polyAdress, String filePath ){
 		this.filePath = filePath;
 		this.polyAdress = polyAdress;
+	}
+	
+	public Sample(String filePath){
+		this.filePath = filePath;
+		
 	}
 	
 	public Sample(){
