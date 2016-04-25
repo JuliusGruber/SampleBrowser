@@ -22,7 +22,7 @@ public class BasketManager extends MaxObject {
 			
 			Sample testSample = new Sample(filePathArray[i]);
 			if(!currentlyInBasket.contains(testSample)){
-				currentlyInBasket.add(testSample);
+				//currentlyInBasket.add(testSample);
 				outlet(0, "append", filePathArray[i]);
 				//this bang gets the playlist dict and sends it to the checkBasketChanges() method
 				outlet(1, "bang");
@@ -59,9 +59,13 @@ public class BasketManager extends MaxObject {
 		int loopCounter  = 1;
 		Atom [] atomSendArray;  
 		
-		
 		HashSet <Sample> nextInBasketCopy  = new HashSet<Sample>(nextInBasket);
+		//post("nextInBasketCopy size: "+nextInBasketCopy.size());
+		
+		
 		nextInBasketCopy.removeAll(currentlyInBasket);
+		
+		//post("nextInBasketCopy size: "+nextInBasketCopy.size());
 		
 		atomSendArray= new Atom[nextInBasketCopy.size() +1];
 		atomSendArray[0]= Atom.newAtom("setSelectedSamples");
@@ -102,7 +106,57 @@ public class BasketManager extends MaxObject {
 		currentlyInBasket = new HashSet <Sample>(nextInBasket);
 		
 	}
+
 	
+	public void checkIfSingleRemove(String [] filePathArray){
+		post("checkIfSingleRemove() method was called");
+		HashSet <Sample> compareSet =  new HashSet <Sample>();
+		for(int i = 0; i< filePathArray.length; i++){
+			//post(filePathArray[i]);
+			
+			Sample curSample  = new Sample(filePathArray[i]);
+			compareSet.add(curSample);
+			
+		}
+		//if it is a remove operation the compare set is a subset of currentlyInBasket
+		if(currentlyInBasket.containsAll(compareSet)){
+			post("compareSet is a subset of currentlyInBasket");
+			HashSet <Sample> currentlyInBasketCopy = new HashSet<Sample>(currentlyInBasket);
+			currentlyInBasketCopy.removeAll (compareSet);
+			if(currentlyInBasketCopy.size() == 1){
+				post("currentlyInBasketCopy size: "+ currentlyInBasketCopy.size());
+				Sample[] removeSampleArray  = currentlyInBasketCopy.toArray(new Sample [currentlyInBasketCopy.size()]);
+				Sample removeSample  = removeSampleArray[0];
+				post("Removing Sample: "+removeSample.getFilePath());
+				
+				
+				
+				//send message to reset the color
+				MaxPatcher parentPatcher = this.getParentPatcher();
+				MaxBox viewManagerSend = parentPatcher.getNamedBox("viewManagerSend");
+			
+				Atom [] sendAtomArray  = new Atom [2];
+				sendAtomArray[0] = Atom.newAtom("unSelectSamples");
+				sendAtomArray [1] = Atom.newAtom(removeSample.getFilePath());
+				viewManagerSend.send("unSelectSamplesInAllViews", sendAtomArray);
+				
+				//remove the sample
+				currentlyInBasket.remove(removeSample);
+			}
+		}
+		
+	}
+	
+	public void removeAllSamples(){
+		//get a handle for the viewManger Receiver
+		MaxPatcher parentPatcher = this.getParentPatcher();
+		MaxBox viewManagerSend = parentPatcher.getNamedBox("viewManagerSend");
+		
+		viewManagerSend.send("resetAllSamplesToUntouchedSampleColor", null);
+		
+		currentlyInBasket =  new HashSet<Sample>();
+		nextInBasket =  new HashSet<Sample>();
+	}
 	
 	
 

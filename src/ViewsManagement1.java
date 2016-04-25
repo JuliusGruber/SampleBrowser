@@ -18,6 +18,7 @@ public class ViewsManagement1 extends MaxObject{
 	}
 	
 	public void selectSamplesInAllViews(Atom  [] filePathArray){
+		post("selectSamplesInAllViews() method was called");
 		for (int i = 0; i < this.viewsList.size(); i++) {
 			viewsList.get(i).jsui.send("list", filePathArray);
 		}
@@ -25,9 +26,19 @@ public class ViewsManagement1 extends MaxObject{
 	}
 	
 	public void unSelectSamplesInAllViews(Atom [] filePathArray){
+		post("unSelectSamplesInAllViews() method was called");
 		for (int i = 0; i < this.viewsList.size(); i++) {
 			viewsList.get(i).jsui.send("list", filePathArray);
 		}
+	}
+	
+	
+	public void resetAllSamplesToUntouchedSampleColor(){
+		post("resetAllSamplesToUntouchedSampleColor() was called");
+		for (int i = 0; i < this.viewsList.size(); i++) {
+			viewsList.get(i).jsui.send("resetAllSamplesToUntouchedSampleColor", null);
+		}
+		
 	}
 	
 
