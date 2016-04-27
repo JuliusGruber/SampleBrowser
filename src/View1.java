@@ -8,14 +8,15 @@ import com.cycling74.max.*;
 
 public class View1 extends MaxObject {
 	
-	MaxBox jsui;
-	MaxPatcher parentPatcher;
-	boolean isSelected;
-	int viewNumber;
-	String viewName;
-	MaxBox viewPanel;
-	ArrayList<Sample> sampleList;
+	private MaxBox jsui;
+	private MaxPatcher parentPatcher;
+	private boolean isSelected;
+	private int viewNumber;
+	private String viewName;
+	private MaxBox viewPanel;
+	private ArrayList<Sample> sampleList;
 	
+
 	public View1(int viewNumber, MaxPatcher viewParentPatcher, ArrayList<Sample> sampleList, Atom [] sampleAtomArray ){
 
 		parentPatcher =viewParentPatcher;
@@ -60,7 +61,62 @@ public class View1 extends MaxObject {
 	}
 	
 	
-	
+	public MaxBox getJsui() {
+		return jsui;
+	}
+
+	public void setJsui(MaxBox jsui) {
+		this.jsui = jsui;
+	}
+
+	public MaxPatcher getParentPatcher() {
+		return parentPatcher;
+	}
+
+	public void setParentPatcher(MaxPatcher parentPatcher) {
+		this.parentPatcher = parentPatcher;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+	}
+
+	public int getViewNumber() {
+		return viewNumber;
+	}
+
+	public void setViewNumber(int viewNumber) {
+		this.viewNumber = viewNumber;
+	}
+
+	public String getViewName() {
+		return viewName;
+	}
+
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+
+	public MaxBox getViewPanel() {
+		return viewPanel;
+	}
+
+	public void setViewPanel(MaxBox viewPanel) {
+		this.viewPanel = viewPanel;
+	}
+
+	public ArrayList<Sample> getSampleList() {
+		return sampleList;
+	}
+
+	public void setSampleList(ArrayList<Sample> sampleList) {
+		this.sampleList = sampleList;
+	}
+
 
 	
 

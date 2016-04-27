@@ -10,25 +10,60 @@ public class ViewsManagement1 extends MaxObject{
 	
 	private ArrayList <View1> viewsList; 
 	private HashMap <String,Sample>  polyAdressLookUp;
+	private HashMap <String, Sample> inBasketLookUp;
+	MaxPatcher p;
+	MaxBox jsuiSonoArea;
+	MaxPatcher viewsPatcher;
 	
 	public ViewsManagement1 (){
 		viewsList = 	new ArrayList<View1>();
 		polyAdressLookUp = new HashMap<String,Sample>();
+		inBasketLookUp = new HashMap<String, Sample>();
+		
+		p = this.getParentPatcher();
+		MaxBox sonoAreaBpatcher = p.getNamedBox("sonoAreaBpatcher");
+		MaxPatcher sonoArea = sonoAreaBpatcher.getSubPatcher();
+		jsuiSonoArea = sonoArea.getNamedBox("jsuiSonoArea");
+		
+	
+		
 		
 	}
 	
 	public void selectSamplesInAllViews(Atom  [] filePathArray){
 		post("selectSamplesInAllViews() method was called");
+		
+		//send selected Samples to all views
 		for (int i = 0; i < this.viewsList.size(); i++) {
-			viewsList.get(i).jsui.send("list", filePathArray);
+			viewsList.get(i).getJsui().send("list", filePathArray);
+			
+		}
+
+		jsuiSonoArea.send("list", filePathArray);
+		
+		//add selected Samples to inBasketLookUp
+		for (int i =1; i < filePathArray.length;i++){
+			Sample curSample  =  new Sample(filePathArray[i].getString());
+			inBasketLookUp.put(curSample.getFilePath(), curSample);
 		}
 		
 	}
 	
 	public void unSelectSamplesInAllViews(Atom [] filePathArray){
 		post("unSelectSamplesInAllViews() method was called");
+		
+		//send  unselected Samples to all Views
 		for (int i = 0; i < this.viewsList.size(); i++) {
-			viewsList.get(i).jsui.send("list", filePathArray);
+			viewsList.get(i).getJsui().send("list", filePathArray);
+		}
+		
+
+		jsuiSonoArea.send("list", filePathArray);
+		
+		//remove unselected Samples from inBasketLookUp
+		for (int i =1; i < filePathArray.length;i++){
+			Sample curSample  =  new Sample(filePathArray[i].getString());
+			inBasketLookUp.remove(curSample.getFilePath());
 		}
 	}
 	
@@ -36,9 +71,12 @@ public class ViewsManagement1 extends MaxObject{
 	public void resetAllSamplesToUntouchedSampleColor(){
 		post("resetAllSamplesToUntouchedSampleColor() was called");
 		for (int i = 0; i < this.viewsList.size(); i++) {
-			viewsList.get(i).jsui.send("resetAllSamplesToUntouchedSampleColor", null);
+			viewsList.get(i).getJsui().send("resetAllSamplesToUntouchedSampleColor", null);
 		}
 		
+		jsuiSonoArea.send("resetAllSamplesToUntouchedSampleColor", null);
+		
+		inBasketLookUp = new HashMap<String, Sample>();
 	}
 	
 
@@ -46,16 +84,12 @@ public class ViewsManagement1 extends MaxObject{
 	public  void addView(Atom [] viewData){
 		//System.out.println("addView() method was called");
 		
-//		for(int i = 0; i<viewData.length;i++){
-//			post(viewData[i].toString());
-//			
-//		}
+		MaxBox viewsBpatcher = p.getNamedBox("viewsBpatcher");
+		MaxPatcher viewsPatcher = viewsBpatcher.getSubPatcher();
 	
 		int viewNumber = viewsList.size();
 		ArrayList<Sample> sampleList = createSamplesArrayList(viewData);
-		MaxPatcher p = this.getParentPatcher();
-		MaxBox viewsBpatcher = p.getNamedBox("viewsBpatcher");
-		MaxPatcher viewsPatcher = viewsBpatcher.getSubPatcher();
+		
 		
 		View1 thisView =  new View1(viewNumber, viewsPatcher, sampleList, viewData);
 		//thisView.jsui.send("anything", viewData);
@@ -78,7 +112,7 @@ public class ViewsManagement1 extends MaxObject{
 			//look up the polyAdress
 			Sample lookUpSample = polyAdressLookUp.get(filePath);
 			int polyAdress = lookUpSample.getPolyAdress();
-			Sample curSample = new Sample(filePath, fileName, xPosition, yPosition, polyAdress);
+			Sample curSample = new Sample(filePath, fileName, xPosition, yPosition, polyAdress, false);
 			
 
 			returnList.add(curSample);
@@ -95,8 +129,8 @@ public class ViewsManagement1 extends MaxObject{
 	public void getSelectedView(){
 		for (int i = 0; i < this.viewsList.size(); i++) {
 		
-			if(viewsList.get(i).isSelected){
-				post("Currently selected view: "+viewsList.get(i).viewName);
+			if(viewsList.get(i).isSelected()){
+				post("Currently selected view: "+viewsList.get(i).getViewName());
 			}
 			
 		}
@@ -109,29 +143,29 @@ public class ViewsManagement1 extends MaxObject{
 		
 		View1 selectedView = null;
 		for (int i = 0; i < this.viewsList.size(); i++) {
-			String compareName = viewsList.get(i).viewName;
+			String compareName = viewsList.get(i).getViewName();
 			if(viewName.equals(compareName)){
 				selectedView = viewsList.get(i);
-				viewsList.get(i).isSelected = true;
+				viewsList.get(i).setSelected(true);
 				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(20)});
-				viewsList.get(i).viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (0),Atom.newAtom(0), Atom.newAtom (1)});
+				viewsList.get(i).getViewPanel().send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (0),Atom.newAtom(0), Atom.newAtom (1)});
 			}else{
-				viewsList.get(i).isSelected = false;
+				viewsList.get(i).setSelected(false);
 				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(10)});
-				viewsList.get(i).viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
+				viewsList.get(i).getViewPanel().send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
 			}
 		}
 		//getSelectedView();
 		
 		//prepare the data for the jsui of the sonoArea
-		ArrayList<Sample> sampleList = selectedView.sampleList;
+		ArrayList<Sample> sampleList = selectedView.getSampleList();
 		Atom [] sonoAreaAtomArray = createSonoAreaAtomArray(sampleList);
 		
 		//send the sample data to the sonoArea
-		MaxPatcher p = this.getParentPatcher();
-		MaxBox sonoAreaBpatcher = p.getNamedBox("sonoAreaBpatcher");
-		MaxPatcher sonoArea = sonoAreaBpatcher.getSubPatcher();
-		MaxBox jsuiSonoArea = sonoArea.getNamedBox("jsuiSonoArea");
+//		MaxPatcher p = this.getParentPatcher();
+//		MaxBox sonoAreaBpatcher = p.getNamedBox("sonoAreaBpatcher");
+//		MaxPatcher sonoArea = sonoAreaBpatcher.getSubPatcher();
+//		MaxBox jsuiSonoArea = sonoArea.getNamedBox("jsuiSonoArea");
 		
 		jsuiSonoArea.send("list", sonoAreaAtomArray);
 
@@ -139,7 +173,7 @@ public class ViewsManagement1 extends MaxObject{
 	}
 	
 	private Atom [] createSonoAreaAtomArray(ArrayList <Sample> sampleList){
-		Atom [] returnAtomArray = new Atom [sampleList.size()*5 +1];
+		Atom [] returnAtomArray = new Atom [sampleList.size()*6 +1];
 		String messageString = "setSampleData";
 		returnAtomArray[0]= Atom.newAtom(messageString);
 		
@@ -150,14 +184,18 @@ public class ViewsManagement1 extends MaxObject{
 			int polyAdress = sample.getPolyAdress();
 			double x = sample.getxPosition();
 			double y = sample.getyPostion();
-			
+			boolean isInBasket = false;
+			if(inBasketLookUp.containsKey(sample.getFilePath())){
+			 isInBasket = true;
+			}
 			returnAtomArray[loopCounter]= Atom.newAtom(filePath);
 			returnAtomArray[loopCounter+1]= Atom.newAtom(fileName);
 			returnAtomArray[loopCounter+2]= Atom.newAtom(polyAdress);
 			returnAtomArray[loopCounter+3]= Atom.newAtom(x);
 			returnAtomArray[loopCounter+4]= Atom.newAtom(y);
+			returnAtomArray[loopCounter+5]= Atom.newAtom(isInBasket);
 			
-			loopCounter = loopCounter+5;
+			loopCounter = loopCounter+6;
 		}
 		
 		
@@ -170,24 +208,28 @@ public class ViewsManagement1 extends MaxObject{
 	
 	public void deleteAllViews(){
 		
+		for(View1 view : viewsList){
+			view.getJsui().remove();
+			view.getViewPanel().remove();
+		}
 		
+//		viewsList = new ArrayList<View1>();
+//		MaxPatcher p = this.getParentPatcher();
+//		MaxBox viewBpatcher = p.getNamedBox("viewsBpatcher");
+//	    MaxPatcher viewsPatcher = viewBpatcher.getSubPatcher();
+//	    MaxBox [] boxes = viewsPatcher.getAllBoxes();
+//        for(int i = 0; i < boxes.length; i++){
+//           MaxBox b = boxes[i];
+//           if(b.getMaxClass().equals("jsui")|| b.getMaxClass().equals("panel")) {
+//        	   b.remove();
+//           }
+//        
+//           //post("Box "+i+": "+b.getName()+"  "+b.getMaxClass());
+//        }
 		
-		viewsList = new ArrayList<View1>();
-		MaxPatcher p = this.getParentPatcher();
-		MaxBox viewBpatcher = p.getNamedBox("viewsBpatcher");
-	    MaxPatcher viewsPatcher = viewBpatcher.getSubPatcher();
-	    MaxBox [] boxes = viewsPatcher.getAllBoxes();
-        for(int i = 0; i < boxes.length; i++)
-        {
-           MaxBox b = boxes[i];
-           if(b.getMaxClass().equals("jsui")|| b.getMaxClass().equals("panel")) {
-        	   b.remove();
-           }
-        
-           //post("Box "+i+": "+b.getName()+"  "+b.getMaxClass());
-        }
-		
-		
+        viewsList = 	new ArrayList<View1>();
+		polyAdressLookUp = new HashMap<String,Sample>();
+		//inBasketLookUp = new HashMap<String, Sample>();
 		
 	}
 	

@@ -8,10 +8,13 @@ import com.cycling74.max.MaxPatcher;
 public class BasketManager extends MaxObject {
 	HashSet <Sample> currentlyInBasket =  new HashSet<Sample>();
 	HashSet<Sample> nextInBasket =  new HashSet<Sample>();
-	
+	MaxPatcher parentPatcher;
+	MaxBox symButtonManager;
 	
 	public BasketManager(){
 		declareIO(1,2);
+		parentPatcher = this.getParentPatcher();
+		symButtonManager = parentPatcher.getNamedBox("symButtonManager");
 	}
 	
 	public void appendSamples(String [] filePathArray){
@@ -22,8 +25,10 @@ public class BasketManager extends MaxObject {
 			
 			Sample testSample = new Sample(filePathArray[i]);
 			if(!currentlyInBasket.contains(testSample)){
-				//currentlyInBasket.add(testSample);
+				//add to the playlist
 				outlet(0, "append", filePathArray[i]);
+				//add SymButtons
+				symButtonManager.send("addSymbolButton", new Atom []{Atom.newAtom(filePathArray[i])});
 				//this bang gets the playlist dict and sends it to the checkBasketChanges() method
 				outlet(1, "bang");
 			}else{
@@ -140,8 +145,14 @@ public class BasketManager extends MaxObject {
 				sendAtomArray [1] = Atom.newAtom(removeSample.getFilePath());
 				viewManagerSend.send("unSelectSamplesInAllViews", sendAtomArray);
 				
+				//remove the SymButton
+				symButtonManager.send("removeSingleButton", new Atom []{Atom.newAtom(removeSample.getFilePath())});
+				
+				
 				//remove the sample
 				currentlyInBasket.remove(removeSample);
+				
+			
 			}
 		}
 		
@@ -153,6 +164,8 @@ public class BasketManager extends MaxObject {
 		MaxBox viewManagerSend = parentPatcher.getNamedBox("viewManagerSend");
 		
 		viewManagerSend.send("resetAllSamplesToUntouchedSampleColor", null);
+		
+		symButtonManager.send("removeAllButtons", null);
 		
 		currentlyInBasket =  new HashSet<Sample>();
 		nextInBasket =  new HashSet<Sample>();

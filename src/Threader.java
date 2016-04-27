@@ -19,16 +19,32 @@ import com.cycling74.max.*;
 public class Threader extends MaxObject  {
 	ArrayList<Atom[]> results;
 	int numberOfThreads;
-	
+	MaxBox jsuiSonoArea;
+	MaxBox viewManager;
+	MaxBox myPoly;
+	MaxBox polyLoopOnOffSend;
+	MaxBox polyFilePathSend;
 	
 	public Threader(){
 		results = new ArrayList<Atom[]>();
 		numberOfThreads =20;
 		
+		MaxPatcher p = this.getParentPatcher();
+		MaxBox sonoAreaBpatcher = p.getNamedBox("sonoAreaBpatcher");
+		MaxPatcher sonoArea = sonoAreaBpatcher.getSubPatcher();
+		jsuiSonoArea = sonoArea.getNamedBox("jsuiSonoArea");
+		viewManager = p.getNamedBox("viewManager");
+		
+		MaxBox audioPbatcher = p.getNamedBox("audioBpatcher");
+		MaxPatcher audioPatcher  = audioPbatcher.getSubPatcher();
+		polyFilePathSend =  audioPatcher.getNamedBox("polyFilePathSend");
+		polyLoopOnOffSend  = audioPatcher.getNamedBox("polyLoopOnOffSend");
+		myPoly =  audioPatcher.getNamedBox("myPoly");
 	}
 	
 	public void loadSamplesToPoly(String dirName){
 		deleteViews();
+		resetSonoArea();
 		//get the file list handed to the callables and the load method
 		Collection <File> filePathColl = getFilePathCollection(dirName);
 		sendFilePathInfoToPoly(filePathColl);
@@ -41,20 +57,16 @@ public class Threader extends MaxObject  {
 	
 	
 	private void deleteViews(){
-		MaxPatcher p = this.getParentPatcher();
-		//MaxBox myBpatcher = p.getNamedBox("myBpatcher");
-		//MaxPatcher viewPatcher  = myBpatcher.getSubPatcher();
-		MaxBox viewManager = p.getNamedBox("viewManager");
 		viewManager.send("deleteAllViews", null);
 	}
 	
+	private void resetSonoArea(){
+		jsuiSonoArea.send("clearSonoArea", null);
+	}
 	
+
+ 	private void setPolyNumberCompareList(Collection <File> filePathColl){
 	
-	private void setPolyNumberCompareList(Collection <File> filePathColl){
-		MaxPatcher p = this.getParentPatcher();
-		//MaxBox myBpatcher = p.getNamedBox("myBpatcher");
-		//MaxPatcher viewPatcher  = myBpatcher.getSubPatcher();
-		MaxBox viewManager = p.getNamedBox("viewManager");
 		
 		Atom [] polyNoFilePathArray = new Atom [filePathColl.size()*2];
 		int polyNumCounter = 1;
@@ -84,12 +96,7 @@ public class Threader extends MaxObject  {
 	private void  sendFilePathInfoToPoly(Collection <File> filePathColl) {
 	    post("sendFilePathInfoToPoly..");
 	 
-	    MaxPatcher p = this.getParentPatcher();
-		MaxBox audioPbatcher = p.getNamedBox("audioBpatcher");
-		MaxPatcher audioPatcher  = audioPbatcher.getSubPatcher();
-		MaxBox polyFilePathSend =  audioPatcher.getNamedBox("polyFilePathSend");
-		MaxBox polyLoopOnOffSend  = audioPatcher.getNamedBox("polyLoopOnOffSend");
-		MaxBox myPoly =  audioPatcher.getNamedBox("myPoly");
+	  
 		
 		myPoly.send("voices", new Atom []{Atom.newAtom(filePathColl.size())});
 		

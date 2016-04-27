@@ -6,6 +6,7 @@ public class Sample {
 	private double xPosition;
 	private double yPosition;
 	private int polyAdress;
+	private boolean isInBasket;
 	
 	
 	
@@ -22,6 +23,15 @@ public class Sample {
 		this.xPosition = xPosition;
 		this.yPosition = yPosition;
 		this.polyAdress = polyAdress;
+	}
+	
+	public Sample(String filePath, String fileName,double xPosition, double yPosition, int polyAdress, boolean isInBasket){
+		this.filePath = filePath;
+		this.fileName = fileName;
+		this.xPosition = xPosition;
+		this.yPosition = yPosition;
+		this.polyAdress = polyAdress;
+		this.isInBasket = isInBasket;
 	}
 
 	public Sample( int polyAdress, String filePath ){
@@ -98,6 +108,14 @@ public class Sample {
 
 	public void setPolyAdress(int polyAdress) {
 		this.polyAdress = polyAdress;
+	}
+
+	public boolean getIsInBasket() {
+		return isInBasket;
+	}
+
+	public void setInBasket(boolean isInBasket) {
+		this.isInBasket = isInBasket;
 	}
 	
 	
