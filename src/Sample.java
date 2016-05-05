@@ -7,7 +7,7 @@ public class Sample {
 	private double yPosition;
 	private int polyAdress;
 	private boolean isInBasket;
-	
+	private String shape;
 	
 	
 	public Sample(String filePath, String fileName,double xPosition, double yPosition){
@@ -34,6 +34,16 @@ public class Sample {
 		this.isInBasket = isInBasket;
 	}
 
+	public Sample(String filePath, String fileName,double xPosition, double yPosition, int polyAdress, boolean isInBasket, String shape){
+		this.filePath = filePath;
+		this.fileName = fileName;
+		this.xPosition = xPosition;
+		this.yPosition = yPosition;
+		this.polyAdress = polyAdress;
+		this.isInBasket = isInBasket;
+		this.shape = shape;
+	}
+	
 	public Sample( int polyAdress, String filePath ){
 		this.filePath = filePath;
 		this.polyAdress = polyAdress;
@@ -53,6 +63,11 @@ public class Sample {
 	
 
 	
+	public Sample(String filePath, String shape) {
+		this.filePath = filePath;
+		this.shape = shape;
+	}
+
 	@Override
 	public int hashCode() {
 		return filePath.hashCode();
@@ -116,6 +131,22 @@ public class Sample {
 
 	public void setInBasket(boolean isInBasket) {
 		this.isInBasket = isInBasket;
+	}
+
+	public double getyPosition() {
+		return yPosition;
+	}
+
+	public void setyPosition(double yPosition) {
+		this.yPosition = yPosition;
+	}
+
+	public String getShape() {
+		return shape;
+	}
+
+	public void setShape(String shape) {
+		this.shape = shape;
 	}
 	
 	

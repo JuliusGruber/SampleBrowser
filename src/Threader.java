@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +45,11 @@ public class Threader extends MaxObject  {
 		myPoly =  audioPatcher.getNamedBox("myPoly");
 	}
 	
+	
+
+	
 	public void loadSamplesToPoly(String dirName){
+	
 		deleteViews();
 		resetSonoArea();
 		//get the file list handed to the callables and the load method
@@ -53,6 +60,9 @@ public class Threader extends MaxObject  {
 		System.out.println("The polyAdressLookUp List was set");
 		
 		randomViewsThread(filePathColl);
+		
+	
+		
 	}
 	
 	
@@ -62,6 +72,85 @@ public class Threader extends MaxObject  {
 	
 	private void resetSonoArea(){
 		jsuiSonoArea.send("clearSonoArea", null);
+	}
+	
+	
+	
+	public void readFromPointFile() throws IOException{
+		
+		BufferedReader in = new BufferedReader(new FileReader("C:/Users/Julius Gruber/Desktop/pointData.txt"));
+		
+		 int numSamples = 0;
+		 String line;
+		 ArrayList<String> splittStringList = new ArrayList<String>();
+		
+		while((line = in.readLine()) != null)
+		{
+			String [] stringArray = line.split("\\$");
+			//post("size of stringArray: "+stringArray.length);
+			if(stringArray.length == 4){
+				
+				String x = stringArray[0];
+				String y = stringArray[1];
+				String filePath = stringArray[2];
+				String fileName = stringArray[3];
+			
+//				if(!x.startsWith("-")){
+//					String plus = "+";
+//					x = plus.concat(x);
+//				}
+//				
+//				if(!y.startsWith("-")){
+//					String plus = "+";
+//					y = plus.concat(y);
+//				}
+				
+//				post("filePath: " +filePath);
+//				post("filename: " +fileName);
+//				post("x: "+x);
+//				post("y: "+y);
+				
+				splittStringList.add(filePath);
+				splittStringList.add(fileName);
+				splittStringList.add(x);
+				splittStringList.add(y);
+				numSamples++;
+				//post(line);
+			}
+		}
+		in.close();
+		
+		 Atom [] viewAtomArray =  new Atom [4*numSamples+1];
+		 viewAtomArray[0]=Atom.newAtom("setSampleData");
+		 
+		 post("numSamples: "+ numSamples);
+		 post("size stringSplittList: "+ splittStringList.size());
+	
+		 Collection <File> filePathColl =  new ArrayList<File>();
+		 for(int i = 0; i< splittStringList.size(); i=i+4){
+			 viewAtomArray[i+1] = Atom.newAtom(splittStringList.get(i));
+			 viewAtomArray[i+2] = Atom.newAtom(splittStringList.get(i+1));
+			 viewAtomArray[i+3] = Atom.newAtom(Double.valueOf(splittStringList.get(i+2)));
+			 viewAtomArray[i+4] = Atom.newAtom(Double.valueOf(splittStringList.get(i+3)));
+			 
+			 filePathColl.add(new File(splittStringList.get(i)));
+		 }
+		 
+		 
+		 
+			deleteViews();
+			resetSonoArea();
+			//get the file list handed to the callables and the load method
+//			String dirName = "C:/Users/Julius Gruber/Desktop/Sample_Datenbanken/1000";
+//			Collection <File> filePathColl = getFilePathCollection(dirName);
+			
+			sendFilePathInfoToPoly(filePathColl);
+			System.out.println("Loading folder has finished");
+			setPolyNumberCompareList(filePathColl);
+			System.out.println("The polyAdressLookUp List was set");
+		
+			outlet(0,"addView",viewAtomArray );
+		
 	}
 	
 
@@ -116,7 +205,7 @@ public class Threader extends MaxObject  {
 			
 			
 			filePath = filePath.replace("\\", "/");
-			post("filePath: "+filePath);
+			//post("filePath: "+filePath);
 			
 			polyFilePathSend.send("target", polyNumber);
 			polyFilePathSend.send(filePath, null);

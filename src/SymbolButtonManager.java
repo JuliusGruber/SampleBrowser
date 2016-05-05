@@ -48,7 +48,7 @@ public class SymbolButtonManager extends MaxObject{
 		post("Size symButtonList: "+symButtonList.size());
 		
 		for(int i = removeIndex; i < symButtonList.size(); i++){
-			symButtonList.get(i).moveButtonUp();
+			//symButtonList.get(i).moveButtonUp();
 		}
 	}
 	

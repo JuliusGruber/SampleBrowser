@@ -10,10 +10,14 @@ public class SymbolButton extends MaxObject {
 	private MaxPatcher parentPatcher;
 	private int xPosition;
 	private int yPosition;
+	private int xPositionInBasket;
+	private int yPositionInBasket;
 	
 	public SymbolButton(MaxPatcher parentPatcher, int xPosition, int yPosition, String filePath){
 		this.xPosition = xPosition;
 		this.yPosition = yPosition;
+		xPositionInBasket = 0;
+		yPositionInBasket = 0;
 		this.parentPatcher =  parentPatcher;
 		this.filePath = filePath;
 		
@@ -30,6 +34,7 @@ public class SymbolButton extends MaxObject {
 		jsui.send("filename", new Atom []{ Atom.newAtom("C:/Users/Julius Gruber/Dropbox/Master/maxMSPpatches/symbolButtonScript.js")});
 		jsui.send("size", new Atom [] { Atom.newAtom(40), Atom.newAtom (40)});
 		jsui.send("presentation", new Atom[] {Atom.newAtom(true)});
+		//jsui.send("setFilePath", new Atom []{Atom.newAtom(filePath)});
 		jsui.send("bang", null);
 		
 //		Atom [] arg2 = new Atom[] {Atom.newAtom(name)};
@@ -42,24 +47,56 @@ public class SymbolButton extends MaxObject {
 	
 
 	}
-
-
-
-
-	public void moveButtonUp(){
-		
-		post("Moving symButton for file: "+filePath);
-		
-		int [] panelRect = panel.getRect();
-		int [] jsuiRect  = jsui.getRect();
-		
-		post("panelRect: "+panelRect[0]+" "+panelRect[1]+" "+panelRect[2]+" "+panelRect[3]);
-		post("jsuiRect: "+jsuiRect[0]+" "+jsuiRect[1]+" "+jsuiRect[2]+" "+jsuiRect[3]);
 	
-		panel.send("presentation_rect", new Atom[] {Atom.newAtom(panelRect[0]), Atom.newAtom(panelRect[1]-50), Atom.newAtom(50), Atom.newAtom(50)});
-		jsui.send("presentation_rect", new Atom[] {Atom.newAtom(jsuiRect[0]), Atom.newAtom(jsuiRect[1]-50), Atom.newAtom(40), Atom.newAtom(40)});
-
+	
+	public void showSymButton(String filePath, int positionInBasket){
+		this.filePath = filePath;
+		xPositionInBasket = 0;
+		yPositionInBasket = positionInBasket*50;
+		Atom[] sendAtomArray =  new Atom[]{Atom.newAtom(xPositionInBasket),Atom.newAtom(yPositionInBasket),Atom.newAtom(50), Atom.newAtom(50)};
+		panel.send("presentation_rect", sendAtomArray);
+		
+		sendAtomArray =  new Atom[]{Atom.newAtom(xPositionInBasket+5),Atom.newAtom(yPositionInBasket+5),Atom.newAtom(40), Atom.newAtom(40)};
+		jsui.send("setFilePath", new Atom []{Atom.newAtom(filePath)});
+		jsui.send("setShape",new Atom []{ Atom.newAtom("quad")});
+		jsui.send("presentation_rect", sendAtomArray);
 	}
+	
+	
+	public void hideSymButton(String filePath){
+		this.filePath = "";
+		Atom[] sendAtomArray =  new Atom[]{Atom.newAtom(xPosition),Atom.newAtom(yPosition),Atom.newAtom(50), Atom.newAtom(50)};
+		panel.send("presentation_rect", sendAtomArray);
+		
+		sendAtomArray =  new Atom[]{Atom.newAtom(xPosition+5),Atom.newAtom(yPosition+5),Atom.newAtom(40), Atom.newAtom(40)};
+		jsui.send("setFilePath", new Atom []{Atom.newAtom("")});
+		jsui.send("setShape",new Atom []{ Atom.newAtom("quad")});
+		jsui.send("presentation_rect", sendAtomArray);
+	}
+
+
+	public void moveUpOneSlot(){
+		xPositionInBasket = 0;
+		yPositionInBasket = yPositionInBasket -50;
+		
+		panel.send("presentation_rect", new Atom[] {Atom.newAtom(xPositionInBasket), Atom.newAtom(yPositionInBasket), Atom.newAtom(50), Atom.newAtom(50)});
+		jsui.send("presentation_rect", new Atom[] {Atom.newAtom(xPositionInBasket+5), Atom.newAtom(yPositionInBasket+5), Atom.newAtom(40), Atom.newAtom(40)});
+	}
+
+//	public void moveButtonUp(){
+//		
+//		post("Moving symButton for file: "+filePath);
+//		
+//		int [] panelRect = panel.getRect();
+//		int [] jsuiRect  = jsui.getRect();
+//		
+//		post("panelRect: "+panelRect[0]+" "+panelRect[1]+" "+panelRect[2]+" "+panelRect[3]);
+//		post("jsuiRect: "+jsuiRect[0]+" "+jsuiRect[1]+" "+jsuiRect[2]+" "+jsuiRect[3]);
+//	
+//		panel.send("presentation_rect", new Atom[] {Atom.newAtom(panelRect[0]), Atom.newAtom(panelRect[1]-50), Atom.newAtom(50), Atom.newAtom(50)});
+//		jsui.send("presentation_rect", new Atom[] {Atom.newAtom(jsuiRect[0]), Atom.newAtom(jsuiRect[1]-50), Atom.newAtom(40), Atom.newAtom(40)});
+//
+//	}
 
 
 
@@ -122,6 +159,26 @@ public class SymbolButton extends MaxObject {
 	public void setYPosition(int yPosition) {
 		this.yPosition = yPosition;
 		
+	}
+
+
+	public int getxPositionInBasket() {
+		return xPositionInBasket;
+	}
+
+
+	public void setxPositionInBasket(int xPositionInBasket) {
+		this.xPositionInBasket = xPositionInBasket;
+	}
+
+
+	public int getyPositionInBasket() {
+		return yPositionInBasket;
+	}
+
+
+	public void setyPositionInBasket(int yPositionInBasket) {
+		this.yPositionInBasket = yPositionInBasket;
 	}
 	
 	
