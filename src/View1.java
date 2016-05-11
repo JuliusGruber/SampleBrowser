@@ -14,6 +14,7 @@ public class View1 extends MaxObject {
 	private int viewNumber;
 	private String viewName;
 	private MaxBox viewPanel;
+	private MaxBox titleMessageBox;
 	private ArrayList<Sample> sampleList;
 	
 
@@ -23,41 +24,41 @@ public class View1 extends MaxObject {
 		this.viewNumber = viewNumber;
 		viewName = "view"+ viewNumber;
 		this.sampleList = sampleList;
+		isSelected = false;
 		
 		int xPosition = 190*viewNumber;
-		int yPosition = 50;
+		int yPosition = 0;
 		
-		jsui = parentPatcher.newDefault( xPosition, yPosition, "jsui",null);
-		
-		
-		jsui.send("filename", new Atom []{ Atom.newAtom("C:/Users/Julius Gruber/Dropbox/Master/maxMSPpatches/viewScript.js")});
-		
-		 Atom [] arg1 = new Atom [] { Atom.newAtom(160), Atom.newAtom (160)};
-		jsui.send("size", arg1);
-		
-		 Atom [] arg3 = new Atom[] {Atom.newAtom(true)};
-		 jsui.send("presentation", arg3);
 		 
-		 
-		 Atom [] arg2 = new Atom[] {Atom.newAtom(viewName)};
-		 jsui.send("setName", arg2);
-		 
-		
-	
-		 jsui.send("list", sampleAtomArray);
-		 //jsui.send("setSampleData", sampleAtomArray);
-		 
-		 isSelected = false;
-		 
-		 
-		viewPanel = parentPatcher.newDefault( xPosition -10, yPosition -10, "panel", null);
-		 Atom [] arg4 = new Atom [] { Atom.newAtom(180), Atom.newAtom (180)};
-		viewPanel.send("size", arg4);
-		viewPanel.send("border", new Atom []{Atom.newAtom(10)});
-		viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
+		viewPanel = parentPatcher.newDefault( xPosition, yPosition, "panel", null);
+		viewPanel.send("size", new Atom [] { Atom.newAtom(180), Atom.newAtom(210)});
+		//viewPanel.send("border", new Atom []{Atom.newAtom(10)});
+		//viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
+		viewPanel.send("bgfillcolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
 		viewPanel.send("ignoreclick", new Atom []{Atom.newAtom(1)});
+		viewPanel.send("presentation",new Atom []{Atom.newAtom(true)});
+		viewPanel.send("background",new Atom []{Atom.newAtom(1)});
+		
+		titleMessageBox  = parentPatcher.newDefault( xPosition + 10, yPosition +10, "message", null);
+		titleMessageBox.send("presentation",new Atom []{Atom.newAtom(true)});
+		titleMessageBox.send("set",new Atom []{Atom.newAtom(viewName)});
+		titleMessageBox.send("textjustification",new Atom []{Atom.newAtom(1)});
+		titleMessageBox.send("size", new Atom [] { Atom.newAtom(160), Atom.newAtom (30)});
+		
+		jsui = parentPatcher.newDefault( xPosition+10, yPosition+40, "jsui",null);
+		jsui.send("filename", new Atom []{ Atom.newAtom("C:/Users/Julius Gruber/Dropbox/Master/maxMSPpatches/viewScript.js")});
+		jsui.send("size", new Atom [] { Atom.newAtom(160), Atom.newAtom (160)});
+		jsui.send("presentation", new Atom[] {Atom.newAtom(true)});
+		jsui.send("setName", new Atom[] {Atom.newAtom(viewName)});
+		jsui.send("list", sampleAtomArray);
+	
+		 
+	
+		 
+
 	   
 	
+		
 	}
 	
 	

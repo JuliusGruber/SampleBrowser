@@ -107,8 +107,6 @@ public class BasketManager2 extends MaxObject{
 		viewManagerSend.send("selectSamplesInAllViews", sendArray);
 	}
 	
-
-	
 	
 	public void removeBasketItem(String filePath){
 		

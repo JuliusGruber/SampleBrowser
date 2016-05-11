@@ -9,6 +9,7 @@ import com.cycling74.max.*;
 public class ViewsManagement1 extends MaxObject{
 	
 	private ArrayList <View1> viewsList; 
+	private ArrayList <String> viewNamesList;
 	private HashMap <String,Sample>  polyAdressLookUp;
 	private HashMap <String, Sample> inBasketLookUp;
 	MaxPatcher p;
@@ -50,7 +51,7 @@ public class ViewsManagement1 extends MaxObject{
 	}
 	
 	public void unSelectSamplesInAllViews(Atom [] filePathArray){
-		post("unSelectSamplesInAllViews() method was called");
+		post("VM unSelectSamplesInAllViews() method was called");
 		
 		//send  unselected Samples to all Views
 		for (int i = 0; i < this.viewsList.size(); i++) {
@@ -94,7 +95,8 @@ public class ViewsManagement1 extends MaxObject{
 		View1 thisView =  new View1(viewNumber, viewsPatcher, sampleList, viewData);
 		//thisView.jsui.send("anything", viewData);
 		viewsList.add(thisView);
-		
+		String viewName = "view"+ viewNumber;
+		viewNamesList.add(viewName);
 		
 
 	}
@@ -145,31 +147,47 @@ public class ViewsManagement1 extends MaxObject{
 		
 		System.out.println("VIEW MANAGER setSelctedView() method was called with: " +viewName);
 		
-		View1 selectedView = null;
-		for (int i = 0; i < this.viewsList.size(); i++) {
-			String compareName = viewsList.get(i).getViewName();
-			if(viewName.equals(compareName)){
-				selectedView = viewsList.get(i);
-				viewsList.get(i).setSelected(true);
-				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(20)});
-				viewsList.get(i).getViewPanel().send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (0),Atom.newAtom(0), Atom.newAtom (1)});
-			}else{
+		int indexSelectedView  = viewNamesList.indexOf(viewName);
+		View1 selectedView  = viewsList.get(indexSelectedView);
+		selectedView.getViewPanel().send("bgfillcolor", new Atom []{Atom.newAtom(0.29), Atom.newAtom (0.31),Atom.newAtom(0.30), Atom.newAtom (1)});
+		selectedView.setSelected(true);
+		for(int i = 0; i < viewsList.size(); i++){
+			if(i != indexSelectedView){
 				viewsList.get(i).setSelected(false);
-				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(10)});
-				viewsList.get(i).getViewPanel().send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
+				viewsList.get(i).getViewPanel().send("bgfillcolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
 			}
 		}
-		//getSelectedView();
+		
+		//View1 selectedView = null;
+//		for (int i = 0; i < this.viewsList.size(); i++) {
+//			String compareName = viewsList.get(i).getViewName();
+//			if(viewName.equals(compareName)){
+//				selectedView = viewsList.get(i);
+//				viewsList.get(i).setSelected(true);
+//				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(20)});
+//				viewsList.get(i).getViewPanel().send("bordercolor", new Atom []{Atom.newAtom(0.29), Atom.newAtom (0.31),Atom.newAtom(0.30), Atom.newAtom (1)});
+//			}else{
+//				viewsList.get(i).setSelected(false);
+//				//viewsArray.get(i).viewPanel.send("border", new Atom []{Atom.newAtom(10)});
+//				viewsList.get(i).getViewPanel().send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
+//			}
+//		}
+		
 		
 		//prepare the data for the jsui of the sonoArea
+//		ArrayList<Sample> sampleList = selectedView.getSampleList();
+//		Atom [] sonoAreaAtomArray = createSonoAreaAtomArray(sampleList);
+//		jsuiSonoArea.send("list", sonoAreaAtomArray);
+
+
+	}
+	
+	public void sendSelectedViewDataToSonoArea(String viewName){
+		int indexSelectedView  = viewNamesList.indexOf(viewName);
+		View1 selectedView  = viewsList.get(indexSelectedView);
 		ArrayList<Sample> sampleList = selectedView.getSampleList();
 		Atom [] sonoAreaAtomArray = createSonoAreaAtomArray(sampleList);
-		
-
-		
 		jsuiSonoArea.send("list", sonoAreaAtomArray);
-
-
 	}
 	
 	private Atom [] createSonoAreaAtomArray(ArrayList <Sample> sampleList){
@@ -221,6 +239,7 @@ public class ViewsManagement1 extends MaxObject{
 		
         viewsList = 	new ArrayList<View1>();
 		polyAdressLookUp = new HashMap<String,Sample>();
+		viewNamesList = new ArrayList<String>();
 		//inBasketLookUp = new HashMap<String, Sample>();
 		
 	}
