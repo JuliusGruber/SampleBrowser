@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import com.cycling74.max.Atom;
 import com.cycling74.max.MaxBox;
@@ -34,15 +37,37 @@ public class ViewsManagement2 extends MaxObject {
 		}
 	}
 	
+	private Atom [] getAtomArrayFromSamplesInBasket(){
+		Atom [] returnArray  = new Atom[inBasketLookUp.size()*2+1];
+		returnArray[0]= Atom.newAtom("setSelectedSamples");
+		int loopCounter = 1;
+		for(Entry<String, Sample> entry : inBasketLookUp.entrySet()){
+		   Sample sample = entry.getValue();
+		   String filePath = sample.getFilePath();
+		   String shape = sample.getShape();
+		   returnArray[loopCounter] = Atom.newAtom(filePath);
+		   returnArray[loopCounter+1] = Atom.newAtom(shape);
+		   loopCounter = loopCounter+2;
+		   
+		}
+
+
+	
+
+		return returnArray;
+		
+	}
+	
 	
 	public void setViewData(Atom [] viewData){
-		post("setViewData() metod was called");
+		post("setViewData() method was called");
 		for(View2 view : viewsList){
 			if(!view.isUsed()){
 				view.setUsed(true);
 				ArrayList<Sample> sampleList = createSamplesArrayList(viewData);
 				view.setSampleList(sampleList);
 				view.getJsui().send("list",viewData);
+				view.getJsui().send("list",getAtomArrayFromSamplesInBasket() );
 				break;
 			}
 		}
@@ -126,7 +151,12 @@ public class ViewsManagement2 extends MaxObject {
 			
 			//look up the polyAdress
 			Sample lookUpSample = polyAdressLookUp.get(filePath);
+			if(lookUpSample == null){
+				post("lookUpSample: "+lookUpSample);
+				post("file not found in polyLookUp");
+			}
 			int polyAdress = lookUpSample.getPolyAdress();
+			post("polyAdress: "+polyAdress+" filePath: "+filePath);
 			Sample curSample = new Sample(filePath, fileName, xPosition, yPosition, polyAdress, false, "circle");
 			
 

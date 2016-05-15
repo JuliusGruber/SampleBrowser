@@ -34,7 +34,7 @@ public class Threader extends MaxObject  {
 	public Threader(){
 		results = new ArrayList<Atom[]>();
 		
-		numberOfThreads = 20;
+		numberOfThreads = 7;
 		
 		MaxPatcher p = this.getParentPatcher();
 		MaxBox sonoAreaBpatcher = p.getNamedBox("sonoAreaBpatcher");
@@ -66,7 +66,7 @@ public class Threader extends MaxObject  {
 		Collection <File> filePathColl = getFilePathCollection(dirName);
 		sendFilePathInfoToPoly(filePathColl);
 		System.out.println("Loading folder has finished");
-		setPolyNumberCompareList(filePathColl);
+		setPolyLookUp(filePathColl);
 		System.out.println("The polyAdressLookUp List was set");
 		
 		//randomViewsThread(filePathColl);
@@ -158,7 +158,7 @@ public class Threader extends MaxObject  {
 			
 			sendFilePathInfoToPoly(filePathColl);
 			System.out.println("Loading folder has finished");
-			setPolyNumberCompareList(filePathColl);
+			setPolyLookUp(filePathColl);
 			System.out.println("The polyAdressLookUp List was set");
 		
 			outlet(0,"addView",viewAtomArray );
@@ -166,7 +166,7 @@ public class Threader extends MaxObject  {
 	}
 	
 
- 	private void setPolyNumberCompareList(Collection <File> filePathColl){
+ 	private void setPolyLookUp(Collection <File> filePathColl){
 	
 		
 		Atom [] polyNoFilePathArray = new Atom [filePathColl.size()*2];
