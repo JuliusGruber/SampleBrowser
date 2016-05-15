@@ -36,8 +36,8 @@ public class MaxMatlabInterface extends MaxObject {
 				
 
 				final ExecutorService pool = Executors.newFixedThreadPool(5);
-				final CompletionService<Object[]> service = new ExecutorCompletionService<Object[]>(pool);
-				List<? extends Callable<Object[]>> callables;
+				final CompletionService<Atom[]> service = new ExecutorCompletionService<Atom[]>(pool);
+				List<? extends Callable<Atom[]>> callables;
 				try {
 						callables = Arrays.asList(
 							
@@ -50,7 +50,7 @@ public class MaxMatlabInterface extends MaxObject {
 						FeatureExtractionCallable firstOne = 	new FeatureExtractionCallable("zero", "C:/Users/Julius Gruber/Dropbox/Master/matlab/Datenbank/rastafarian/", 1102);
 						service.submit(firstOne);
 						//wait for the first one to finish
-						Future<Object[]> future = service.take();
+						Future<Atom[]> future = service.take();
 					    Object [] results = future.get();
 			   	        Atom [] resultsAtomArray  = getSampleAtomArray(results);
 			   	        viewManager.send("addView", resultsAtomArray);
@@ -83,7 +83,7 @@ public class MaxMatlabInterface extends MaxObject {
 //			   	        viewManager.send("addView", resultsAtomArray);
 			   	        
 						
-				for (final Callable<Object[]> callable : callables) {
+				for (final Callable<Atom[]> callable : callables) {
 						      service.submit(callable);
 						     
 				}	
@@ -105,7 +105,7 @@ public class MaxMatlabInterface extends MaxObject {
 	    	   synchronized(resultObjectsList){	
 		    	for(int i = 0; i< 3;i++){
 		  	     // while (!pool.isTerminated()) {
-			        Future<Object[]> future1 = service.take();
+			        Future<Atom[]> future1 = service.take();
 		   	        System.out.println("A THREAD HAS DONE ITS WORK...");
 		  	        //System.out.println("This is the result: "+future.get().toString());
 		   	        Object [] results1 = future1.get();
@@ -329,8 +329,8 @@ public class MaxMatlabInterface extends MaxObject {
 				
 
 				final ExecutorService pool = Executors.newFixedThreadPool(5);
-				final CompletionService<Object[]> service = new ExecutorCompletionService<Object[]>(pool);
-				List<? extends Callable<Object[]>> callables;
+				final CompletionService<Atom[]> service = new ExecutorCompletionService<Atom[]>(pool);
+				List<? extends Callable<Atom[]>> callables;
 				try {
 						callables = Arrays.asList(
 							
@@ -343,7 +343,7 @@ public class MaxMatlabInterface extends MaxObject {
 			   	        
 
 						
-				for (final Callable<Object[]> callable : callables) {
+				for (final Callable<Atom[]> callable : callables) {
 						      service.submit(callable);
 						     
 				}	
@@ -356,7 +356,7 @@ public class MaxMatlabInterface extends MaxObject {
 	    	   synchronized(resultObjectsList){	
 		    	for(int i = 0; i< callables.size();i++){
 		  	     // while (!pool.isTerminated()) {
-			        Future<Object[]> future1 = service.take();
+			        Future<Atom[]> future1 = service.take();
 		   	        System.out.println("A THREAD HAS DONE ITS WORK...");
 		  	        //System.out.println("This is the result: "+future.get().toString());
 		   	        Object [] results1 = future1.get();

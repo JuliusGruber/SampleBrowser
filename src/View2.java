@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import com.cycling74.max.*;
 
 
-public class View1 extends MaxObject {
+public class View2 extends MaxObject {
 	
 	private MaxBox jsui;
 	private MaxPatcher parentPatcher;
 	private boolean isSelected;
+	private boolean isUsed;
 	private int viewNumber;
 	private String viewName;
 	private MaxBox viewPanel;
@@ -18,56 +19,16 @@ public class View1 extends MaxObject {
 	private ArrayList<Sample> sampleList;
 	
 
-	public View1(int viewNumber, MaxPatcher viewParentPatcher, ArrayList<Sample> sampleList, Atom [] sampleAtomArray ){
 
-		parentPatcher =viewParentPatcher;
-		this.viewNumber = viewNumber;
-		viewName = "view"+ viewNumber;
-		this.sampleList = sampleList;
-		isSelected = false;
-		
-		int xPosition = 190*viewNumber;
-		int yPosition = 0;
-		
-		 
-		viewPanel = parentPatcher.newDefault( xPosition, yPosition, "panel", null);
-		viewPanel.send("size", new Atom [] { Atom.newAtom(180), Atom.newAtom(210)});
-		//viewPanel.send("border", new Atom []{Atom.newAtom(10)});
-		//viewPanel.send("bordercolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
-		viewPanel.send("bgfillcolor", new Atom []{Atom.newAtom(1), Atom.newAtom (1),Atom.newAtom(1), Atom.newAtom (1)});
-		viewPanel.send("ignoreclick", new Atom []{Atom.newAtom(1)});
-		viewPanel.send("presentation",new Atom []{Atom.newAtom(true)});
-		viewPanel.send("background",new Atom []{Atom.newAtom(1)});
-		
-		titleMessageBox  = parentPatcher.newDefault( xPosition + 10, yPosition +10, "message", null);
-		titleMessageBox.send("presentation",new Atom []{Atom.newAtom(true)});
-		titleMessageBox.send("set",new Atom []{Atom.newAtom(viewName)});
-		titleMessageBox.send("textjustification",new Atom []{Atom.newAtom(1)});
-		titleMessageBox.send("size", new Atom [] { Atom.newAtom(160), Atom.newAtom (30)});
-		
-		jsui = parentPatcher.newDefault( xPosition+10, yPosition+40, "jsui",null);
-		jsui.send("filename", new Atom []{ Atom.newAtom("C:/Users/Julius Gruber/Dropbox/Master/maxMSPpatches/viewScript.js")});
-		jsui.send("size", new Atom [] { Atom.newAtom(160), Atom.newAtom (160)});
-		jsui.send("presentation", new Atom[] {Atom.newAtom(true)});
-		jsui.send("setName", new Atom[] {Atom.newAtom(viewName)});
-		jsui.send("list", sampleAtomArray);
-	
-		 
-	
-		 
-
-	   
-	
-		
-	}
 	
 	
-	public View1(int viewNumber, MaxPatcher viewParentPatcher, String viewName) {
+	public View2(int viewNumber, MaxPatcher viewParentPatcher, String viewName) {
 		parentPatcher =viewParentPatcher;
 		this.viewNumber = viewNumber;
 		this.viewName = viewName;
 		
 		isSelected = false;
+		isUsed  = false;
 		
 		int xPosition = 190*viewNumber;
 		int yPosition = 0;
@@ -159,6 +120,16 @@ public class View1 extends MaxObject {
 
 	public void setTitleMessageBox(MaxBox titleMessageBox) {
 		this.titleMessageBox = titleMessageBox;
+	}
+
+
+	public boolean isUsed() {
+		return isUsed;
+	}
+
+
+	public void setUsed(boolean isUsed) {
+		this.isUsed = isUsed;
 	}
 
 

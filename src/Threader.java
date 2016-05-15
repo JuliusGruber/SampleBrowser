@@ -27,10 +27,14 @@ public class Threader extends MaxObject  {
 	MaxBox myPoly;
 	MaxBox polyLoopOnOffSend;
 	MaxBox polyFilePathSend;
+	MaxBox sendViewManager;
+	MaxBox sendRemoveAll;
+
 	
 	public Threader(){
 		results = new ArrayList<Atom[]>();
-		numberOfThreads =20;
+		
+		numberOfThreads = 20;
 		
 		MaxPatcher p = this.getParentPatcher();
 		MaxBox sonoAreaBpatcher = p.getNamedBox("sonoAreaBpatcher");
@@ -43,6 +47,10 @@ public class Threader extends MaxObject  {
 		polyFilePathSend =  audioPatcher.getNamedBox("polyFilePathSend");
 		polyLoopOnOffSend  = audioPatcher.getNamedBox("polyLoopOnOffSend");
 		myPoly =  audioPatcher.getNamedBox("myPoly");
+		
+		sendViewManager = p.getNamedBox("sendViewManager");
+		sendRemoveAll = p.getNamedBox("removeAllReceiver");
+	
 	}
 	
 	
@@ -50,8 +58,10 @@ public class Threader extends MaxObject  {
 	
 	public void loadSamplesToPoly(String dirName){
 	
-		deleteViews();
+		resetViews();
 		resetSonoArea();
+		resetBasket();
+		
 		//get the file list handed to the callables and the load method
 		Collection <File> filePathColl = getFilePathCollection(dirName);
 		sendFilePathInfoToPoly(filePathColl);
@@ -59,22 +69,24 @@ public class Threader extends MaxObject  {
 		setPolyNumberCompareList(filePathColl);
 		System.out.println("The polyAdressLookUp List was set");
 		
-		randomViewsThread(filePathColl);
+		//randomViewsThread(filePathColl);
 		
-	
+		matlabFE(dirName, filePathColl);
 		
 	}
 	
 	
-	private void deleteViews(){
-		viewManager.send("deleteAllViews", null);
+	private void resetViews(){
+		sendViewManager.send("resetAllViews", null);
 	}
 	
 	private void resetSonoArea(){
 		jsuiSonoArea.send("clearSonoArea", null);
 	}
 	
-	
+	private void resetBasket(){
+		sendRemoveAll.send("removeAllSamples", null);
+	}
 	
 	public void readFromPointFile() throws IOException{
 		
@@ -138,7 +150,7 @@ public class Threader extends MaxObject  {
 		 
 		 
 		 
-			deleteViews();
+			resetViews();
 			resetSonoArea();
 			//get the file list handed to the callables and the load method
 //			String dirName = "C:/Users/Julius Gruber/Desktop/Sample_Datenbanken/1000";
@@ -179,7 +191,7 @@ public class Threader extends MaxObject  {
 			arrayCounter = arrayCounter+2;
 		}
 		
-		viewManager.send("setPolyLookUp", polyNoFilePathArray);
+		sendViewManager.send("setPolyLookUp", polyNoFilePathArray);
 	}
 	
 	private void  sendFilePathInfoToPoly(Collection <File> filePathColl) {
@@ -224,19 +236,14 @@ public class Threader extends MaxObject  {
 	
 	}
 	
-	public void matlabFE(final Collection <File> filePathColl){
+	public void matlabFE(final String dirName, final Collection <File> filePathColl ){
 		
 		
 		Thread t = new Thread(){
 			public void run(){
-				//System.out.println("Thread recieved: "+dirName); 
-				
+			
 				
 
-				
-				
-				results = new ArrayList<Atom[]>();
-				
 				
 			
 				
@@ -244,35 +251,79 @@ public class Threader extends MaxObject  {
 				final ExecutorService pool = Executors.newFixedThreadPool(numberOfThreads);
 				final CompletionService<Atom[]> service = new ExecutorCompletionService<Atom[]>(pool);
 				List<? extends Callable<Atom[]>>  callables;
-				RandomCallable [] arrayCallables = new RandomCallable[numberOfThreads];
-				for(int i = 0; i< numberOfThreads; i++){
-					arrayCallables[i] = new RandomCallable(filePathColl);
+				List<? extends Callable<Atom[]>>  callablesRandom;
+				FeatureExtractionCallable [] arrayCallables = new FeatureExtractionCallable[4];
+				RandomCallable [] arrayCallablesRandom = new RandomCallable[numberOfThreads-4];
+				
+				arrayCallables[0]= new FeatureExtractionCallable("zero", dirName,3000 );
+				arrayCallables[1]= new FeatureExtractionCallable("one", dirName,3001 );
+				arrayCallables[2]= new FeatureExtractionCallable("two", dirName,3002 );
+				arrayCallables[3]= new FeatureExtractionCallable("three", dirName,3000 );
+				
+				
+			
+				for(int i = 0; i< numberOfThreads-4; i++ ){
+					arrayCallablesRandom[i]  = new RandomCallable(filePathColl);
 				}
+			
+				//single working example
+//				FeatureExtractionCallable firstOne = 	new FeatureExtractionCallable("zero", dirName, 3000);
+//				service.submit(firstOne);
+//				//wait for the first one to finish
+//				try {
+//					Future<Atom[]> future = service.take();
+//					Atom []resultsAtomArray = future.get();
+//					
+//					for(int i = 1; i <resultsAtomArray.length; i= i+4){
+//						post(resultsAtomArray[i].getString());
+//						post(resultsAtomArray[i+1].getString());
+//						post(Float.toString(resultsAtomArray[i+2].getFloat()));
+//						post(Float.toString(resultsAtomArray[i+3].getFloat()));
+//					}
+//					
+//					
+//					outlet(0,"addView",resultsAtomArray );
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (ExecutionException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				
+				
 				
 				callables = Arrays.asList(arrayCallables);
-				       
+				callablesRandom = Arrays.asList(arrayCallablesRandom);
 						
 				for (final Callable<Atom[]> callable : callables) {
 						      service.submit(callable);
 						     
 				}	
+				
+				for (final Callable<Atom[]> callable : callablesRandom) {
+				      service.submit(callable);
+				     
+		}	
 
 							
 			   pool.shutdown();
 			    
 			   
 			  
-	    
-		    	for(int i = 0; i< callables.size();i++){
-		  	     // while (!pool.isTerminated()) {
+			   
+		    	//for(int i = 0; i< callables.size();i++){
+		  	     while (!pool.isTerminated()) {
 			        Future<Atom[]> future;
 					try {
 						future = service.take();
 						System.out.println("A THREAD HAS DONE ITS WORK...");
-						synchronized(results){
-						results.add( future.get());
-						}
-						//printThreadResults(results);
+//						synchronized(results){
+//						results.add( future.get());
+//						}
+						//outlet(0,"addView",future.get());
+						outlet(0,"sendViewDataToViewManager",future.get() );
+						//printThreadResults(results.get(0));
 						//viewManager.send("addView", results);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -288,26 +339,26 @@ public class Threader extends MaxObject  {
 
 				
 				
-				boolean hasNotFinsihed = true;
-				int nextCounter = 0;
-				
-					while(hasNotFinsihed ){
-						if(results.size() > 0){//if there is at least one result
-							if( nextCounter < results.size()){
-								//viewManager.send("addView", results.get(nextCounter));
-								Atom [] singleResultAtomArray = null;
-								synchronized(results){
-									singleResultAtomArray = results.get(nextCounter);
-								}
-								outlet(0,"addView",singleResultAtomArray );
-							
-								nextCounter++;
-							}
-							if(nextCounter == numberOfThreads){
-								hasNotFinsihed = false;
-							}
-						}
-					}
+//				boolean hasNotFinsihed = true;
+//				int nextCounter = 0;
+//				
+//					while(hasNotFinsihed ){
+//						if(results.size() > 0){//if there is at least one result
+//							if( nextCounter < results.size()){
+//								//viewManager.send("addView", results.get(nextCounter));
+//								Atom [] singleResultAtomArray = null;
+//								synchronized(results){
+//									singleResultAtomArray = results.get(nextCounter);
+//								}
+//								outlet(0,"addView",singleResultAtomArray );
+//							
+//								nextCounter++;
+//							}
+//							if(nextCounter == numberOfThreads){
+//								hasNotFinsihed = false;
+//							}
+//						}
+//					}
 				
 		    	
 		    	
@@ -330,7 +381,8 @@ public class Threader extends MaxObject  {
 				//System.out.println("Thread recieved: "+dirName); 
 				
 				
-
+		
+			
 				
 				
 				results = new ArrayList<Atom[]>();
@@ -363,7 +415,7 @@ public class Threader extends MaxObject  {
 			  
 	    
 		    	for(int i = 0; i< callables.size();i++){
-		  	     // while (!pool.isTerminated()) {
+		  	     //while (!pool.isTerminated()) {
 			        Future<Atom[]> future;
 					try {
 						future = service.take();
@@ -371,6 +423,8 @@ public class Threader extends MaxObject  {
 						synchronized(results){
 						results.add( future.get());
 						}
+						
+						//outlet(0, "addView", future.get());
 						//printThreadResults(results);
 						
 					} catch (InterruptedException e) {
@@ -398,7 +452,7 @@ public class Threader extends MaxObject  {
 								synchronized(results){
 									singleResultAtomArray = results.get(nextCounter);
 								}
-								outlet(0,"addView",singleResultAtomArray );
+								outlet(0,"sendViewDataToViewManager",singleResultAtomArray );
 							
 								nextCounter++;
 							}
@@ -424,15 +478,12 @@ public class Threader extends MaxObject  {
 	
 	
 	
-	
 	protected void printThreadResults(Atom [] results) {
 		for(Atom atom : results){
 			System.out.println(atom.toString());
 		}
 		
 	}
-
-
 
 
 	protected Collection<File> getFilePathCollection(String dirName) {

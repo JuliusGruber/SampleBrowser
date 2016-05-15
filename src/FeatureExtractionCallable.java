@@ -9,11 +9,16 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.cycling74.max.Atom;
+import com.mathworks.toolbox.javabuilder.MWArray;
+import com.mathworks.toolbox.javabuilder.MWCellArray;
+import com.mathworks.toolbox.javabuilder.MWNumericArray;
+
 import MatlabFE.FeRemote;
 
 
 
-public  class FeatureExtractionCallable implements Callable <Object[]> {
+public  class FeatureExtractionCallable implements Callable <Atom[]> {
 
 	   final String methodName;
 	   final String dirName;
@@ -30,7 +35,7 @@ public  class FeatureExtractionCallable implements Callable <Object[]> {
 
 	    
 	    
-	    public Object [] call()  {
+	    public Atom[] call()  {
 	   
 	    	System.out.println("call() with: "+methodName);
 	    	
@@ -96,10 +101,7 @@ public  class FeatureExtractionCallable implements Callable <Object[]> {
 	        }
 	        
 	        
-//	        if(methodName.equals("getFileInfo")){
-//	    		results  = dTypes.getAllFileNames(1, dirName);
-//				
-//	        }
+
 				
 				
 	        } catch (RemoteException e) {
@@ -115,12 +117,102 @@ public  class FeatureExtractionCallable implements Callable <Object[]> {
 	        
 				
 		
-	    	 
+	       return  getSampleAtomArray(results) ;
 	        
 	       
 
-	      return results;
+	     
 	     
 
 }
+	    
+		private static Atom [] getSampleAtomArray(Object [] results){
+		  	
+			
+			MWCellArray mwCellArray  = null;
+			MWArray singleCell  = null;
+			MWNumericArray numericArray = null;
+			Atom [] viewAtomArray = null;
+			
+			try {
+			
+				
+			
+				
+				mwCellArray = (MWCellArray) results[0];
+				int [] dimArray = mwCellArray.getDimensions();
+				int rowNumber = dimArray[0];
+				int columnNumber = dimArray[1];
+				
+				int [] initArray = new int [rowNumber*columnNumber+1];
+				viewAtomArray = Atom.newAtom(initArray);
+				viewAtomArray[0]=Atom.newAtom("setSampleData");
+				int counterAtomArray = 1;
+				
+				for(int i =1; i< rowNumber+1; i++ ){
+					
+					int [] dimArrayGet =  new int []{i,1};
+					singleCell = mwCellArray.getCell(dimArrayGet);
+					String filePathString = singleCell.toString();
+					Atom filePathAtom = Atom.newAtom(filePathString);
+					//System.out.println(filePathString);
+					
+					
+					dimArrayGet =  new int []{i,2};
+					singleCell = mwCellArray.getCell(dimArrayGet);
+					String fileNameString = singleCell.toString();
+					Atom fileNameAtom = Atom.newAtom(fileNameString);
+					//System.out.println(fileNameString);
+					
+					
+					dimArrayGet =  new int []{i,3};
+					singleCell = mwCellArray.getCell(dimArrayGet);
+					numericArray = (MWNumericArray)singleCell;
+					float xPosition  =numericArray.getFloat();
+					Atom xPositionAtom = Atom.newAtom(xPosition);
+					//System.out.println(xPosition);
+					
+					
+					
+					dimArrayGet =  new int []{i,4};
+					singleCell = mwCellArray.getCell(dimArrayGet);
+					numericArray = (MWNumericArray)singleCell;
+					float yPosition  = numericArray.getFloat();
+					Atom yPositionAtom = Atom.newAtom(yPosition);
+					//System.out.println(yPosition);
+					
+					viewAtomArray[counterAtomArray] = filePathAtom;
+					
+					viewAtomArray[counterAtomArray+1] = fileNameAtom;
+				
+					viewAtomArray[counterAtomArray+2] = xPositionAtom;
+				
+					viewAtomArray[counterAtomArray+3] = yPositionAtom;
+					
+					counterAtomArray = counterAtomArray+4;
+				}
+				
+//				for(int i = 0; i<sampleAtomArray.length; i++){
+//					System.out.println(sampleAtomArray[i]);
+//				}
+				
+				return viewAtomArray;
+				
+			}finally{
+				
+				mwCellArray.dispose();
+				singleCell.dispose();
+				numericArray.dispose();
+				
+				mwCellArray = null;
+				singleCell = null;
+				numericArray = null;
+				
+				
+			}
+
+	  }
+	    
+	    
+
 }

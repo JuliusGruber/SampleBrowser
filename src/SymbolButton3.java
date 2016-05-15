@@ -124,7 +124,7 @@ public class SymbolButton3 extends MaxObject {
 	public void moveToBasketPosition(int position){
 		positionInBasket = position;
 		int xPositionInBasket = 0;
-		int yPositionInBasket = position*50;
+		yPositionInBasket = position*50;
 		
 		panel.send("presentation_rect", new Atom[] {Atom.newAtom(xPositionInBasket), Atom.newAtom(yPositionInBasket), Atom.newAtom(50), Atom.newAtom(50)});
 		jsui.send("presentation_rect", new Atom[] {Atom.newAtom(xPositionInBasket+5), Atom.newAtom(yPositionInBasket+5), Atom.newAtom(40), Atom.newAtom(40)});
@@ -132,26 +132,7 @@ public class SymbolButton3 extends MaxObject {
 	
 	
 
-	
 
-
-	
-	
-	
-//	public void moveButtonUp(){
-//		
-//		post("Moving symButton for file: "+filePath);
-//		
-//		int [] panelRect = panel.getRect();
-//		int [] jsuiRect  = jsui.getRect();
-//		
-//		post("panelRect: "+panelRect[0]+" "+panelRect[1]+" "+panelRect[2]+" "+panelRect[3]);
-//		post("jsuiRect: "+jsuiRect[0]+" "+jsuiRect[1]+" "+jsuiRect[2]+" "+jsuiRect[3]);
-//	
-//		panel.send("presentation_rect", new Atom[] {Atom.newAtom(panelRect[0]), Atom.newAtom(panelRect[1]-50), Atom.newAtom(50), Atom.newAtom(50)});
-//		jsui.send("presentation_rect", new Atom[] {Atom.newAtom(jsuiRect[0]), Atom.newAtom(jsuiRect[1]-50), Atom.newAtom(40), Atom.newAtom(40)});
-//
-//	}
 
 
 	public boolean isInBasket() {

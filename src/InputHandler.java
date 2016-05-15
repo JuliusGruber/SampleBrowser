@@ -26,5 +26,13 @@ public class InputHandler extends MaxObject{
 		
 		
 	}
+	
+	
+	public void sendViewDataToViewManager(Atom[] atomArray){
+		post("sendViewDataToViewManager() method was called");
+		MaxPatcher p = this.getParentPatcher();
+		MaxBox sendViewManager =p.getNamedBox("sendViewManager");
+		sendViewManager.send("setViewData", atomArray);
+	}
 
 }
