@@ -1,3 +1,3 @@
 Prototype of the MM-Browser
 ============================
-see  for deatails
+see https://github.com/JuliusGruber/Steerable-Music-Recommender for deatails
